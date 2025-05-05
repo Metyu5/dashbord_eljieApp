@@ -92,7 +92,7 @@ $result = mysqli_query($conn, $query);
                             echo "<td>" . $row['booking_date'] . "</td>";
                             echo "<td>" . $row['check_in_date'] . "</td>";
                             echo "<td>" . $row['check_out_date'] . "</td>";
-                            echo "<td>Rp " . number_format($row['total_amount'], 0, ',', '.') . "</td>";
+                            echo "<td>Rp " . number_format($row['total_amount'], 3, ',', '.') . "</td>";
                             echo "<td><span class='$badge_class'>$status_label</span></td>";
                             echo "<td>
                                     <a href='edit_bookings.php?id={$row['id_bookings']}' class='btn-edit-beruang' title='Edit'>
