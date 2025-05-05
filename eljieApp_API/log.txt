@@ -1,0 +1,67 @@
+Received Data: Array
+(
+)
+
+Data tidak lengkap!
+Received Data: Array
+(
+)
+
+Data tidak lengkap!
+Received Data: Array
+(
+)
+
+Data tidak lengkap!
+Received Data: Array
+(
+)
+
+Received Data: Array
+(
+)
+
+Received Data: Array
+(
+)
+
+Received Data: Array
+(
+)
+
+Received Data: Array
+(
+)
+
+Received Data: Array
+(
+)
+
+Received Data: Array
+(
+)
+
+Received Data: Array
+(
+)
+
+Received Data: Array
+(
+)
+
+Received Data: Array
+(
+)
+
+Data received: Array
+(
+    [username] => nurlan@gmail.com
+    [id_room] => 7
+    [kode_booking] => KB8985
+    [booking_date] => 2025-05-04
+    [check_in_date] => 2025-05-04
+    [check_out_date] => 2025-05-05
+    [total_amount] => 264800
+    [promo_code] => ELJIEHOTEL7
+)
+
