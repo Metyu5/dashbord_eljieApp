@@ -1,12 +1,25 @@
 <?php
 require_once 'config/koneksi.php';
 
-$query = "SELECT h.id_history, h.kode_booking, u.username AS user, r.room_type AS room, 
-                 p.code AS promo, h.booking_date, h.check_in_date, h.check_out_date, h.total_amount
+// Set timezone ke WITA (Asia/Makassar)
+date_default_timezone_set('Asia/Makassar');
+
+$query = "SELECT h.id_history, 
+                 h.kode_booking, 
+                 u.username AS user, 
+                 r.room_type AS room, 
+                 p.code AS promo, 
+                 b.booking_date, 
+                 b.check_in_date, 
+                 b.check_out_date, 
+                 b.total_amount, 
+                 b.status
           FROM tb_history h
-          LEFT JOIN tb_users u ON h.id_user = u.id_user
-          LEFT JOIN tb_rooms r ON h.id_room = r.id_room
-          LEFT JOIN tb_promo p ON h.id_promo = p.id";
+          LEFT JOIN tb_bookings b ON h.id_booking = b.id_bookings
+          LEFT JOIN tb_users u ON b.id_user = u.id_user
+          LEFT JOIN tb_rooms r ON b.id_room = r.id_room
+          LEFT JOIN tb_promo p ON b.id = p.id"; // Perbaikan pada bagian join untuk promo
+
 $result = mysqli_query($conn, $query);
 
 // Convert logo path and encode
@@ -45,9 +58,10 @@ $html = '
         .header {
             display: flex;
             align-items: center;
+            justify-content: center;
             margin-bottom: 15px;
             padding-bottom: 15px;
-            border-bottom: 2px solid #3498db;
+            border-bottom: 2px solid #00000;
         }
         .logo-container {
             width: 80px;
@@ -63,6 +77,7 @@ $html = '
             object-fit: contain;
         }
         .header-text {
+            text-align: center;
             flex-grow: 1;
         }
         .hotel-name {
@@ -71,6 +86,20 @@ $html = '
             font-size: 22px;
             font-weight: 600;
             letter-spacing: 0.5px;
+        }
+        .hotel-address {
+            color: #7f8c8d;
+            margin: 5px 0;
+            font-size: 14px;
+            font-style: italic;
+        }
+        .date-badge {
+            background-color: #e3f2fd;
+            color: #1976d2;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            display: inline-block;
         }
         .report-title {
             background-color: #f8f9fa;
@@ -124,14 +153,6 @@ $html = '
             font-weight: 600;
             color: #2e7d32;
         }
-        .date-badge {
-            background-color: #e3f2fd;
-            color: #1976d2;
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-size: 10px;
-            display: inline-block;
-        }
         .footer-content {
             font-size: 10px;
             color: #777;
@@ -154,33 +175,26 @@ $html = '
 $html .= ($logoSrc != '') ? '<img src="' . $logoSrc . '" class="logo">' : 'LOGO';
 $html .= '</div>
             <div class="header-text">
-                <h1 class="hotel-name">HOTEL ELJIE</h1>
-                <div class="address">' . $hotelAddress . '</div>
-            </div>
-            <div>
+                <h1 class="hotel-name">HOTEL ELJIE SYARIAH</h1>
+                <div class="hotel-address">' . $hotelAddress . '</div>
                 <div class="date-badge">Dicetak: ' . date('d/m/Y H:i') . '</div>
             </div>
         </div>
     </htmlpageheader>
 
-    <!-- Footer for all pages -->
-    <htmlpagefooter name="footer">
-        <div class="footer-content">
-            Halaman {PAGENO} dari {nbpg}<br>
-            ' . $hotelAddress . ' | Telp: ' . $hotelPhone . '
-        </div>
-    </htmlpagefooter>
-
+    <!-- Title Section -->
     <div class="report-title">
         <h2>LAPORAN RIWAYAT PEMESANAN KAMAR</h2>
     </div>
 
+    <!-- Meta Information -->
     <div class="meta-info">
         <div><strong>Total Data:</strong> ' . mysqli_num_rows($result) . ' records</div>
         <div><strong>Periode:</strong> Semua Data</div>
         <div><strong>User:</strong> Sistem</div>
     </div>
 
+    <!-- Table Section -->
     <table>
         <thead>
             <tr>
@@ -197,11 +211,12 @@ $html .= '</div>
         </thead>
         <tbody>';
 
+$no = 1;  // Mulai penghitung ID dari 1
 if (mysqli_num_rows($result) > 0) {
     while ($row = mysqli_fetch_assoc($result)) {
         $html .= '
             <tr>
-                <td>' . $row['id_history'] . '</td>
+                <td>' . $no++ . '</td>
                 <td>' . $row['kode_booking'] . '</td>
                 <td>' . $row['user'] . '</td>
                 <td>' . $row['room'] . '</td>
@@ -209,7 +224,7 @@ if (mysqli_num_rows($result) > 0) {
                 <td>' . date('d/m/Y', strtotime($row['booking_date'])) . '</td>
                 <td>' . date('d/m/Y', strtotime($row['check_in_date'])) . '</td>
                 <td>' . date('d/m/Y', strtotime($row['check_out_date'])) . '</td>
-                <td class="text-right amount">Rp ' . number_format($row['total_amount'], 0, ',', '.') . '</td>
+                <td class="text-right amount">Rp ' . number_format($row['total_amount'], 3, ',', '.') . '</td>
             </tr>';
     }
 } else {
@@ -237,7 +252,8 @@ $dompdf = new Dompdf([
 ]);
 
 $dompdf->loadHtml($html);
-$dompdf->setPaper('A4', 'portrait');
+$dompdf->setPaper('A4', 'landscape');
+
 $dompdf->render();
 
 $filename = "Laporan_Pemesanan_Hotel_Eljie_" . date('Ymd_His') . ".pdf";

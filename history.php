@@ -2,16 +2,42 @@
 session_start();
 include "config/koneksi.php";
 
-// Query untuk mengambil data history dengan informasi booking lengkap
+// Setup Pagination
+$perPage = 5;
+$page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$offset = ($page - 1) * $perPage;
+
+// Hitung total data untuk pagination
+$countQuery = "SELECT COUNT(*) as total FROM tb_history h
+               LEFT JOIN tb_bookings b ON h.kode_booking = b.kode_booking
+               LEFT JOIN tb_users u ON b.id_user = u.id_user
+               LEFT JOIN tb_rooms r ON b.id_room = r.id_room
+               LEFT JOIN tb_promo p ON b.id = p.id";
+$totalResult = mysqli_query($conn, $countQuery);
+$totalRows = mysqli_fetch_assoc($totalResult)['total'];
+$totalPages = ceil($totalRows / $perPage);
+
+// Hitung rentang halaman
+$range = 5;
+$startPage = max(1, $page - floor($range / 2));
+$endPage = min($totalPages, $startPage + $range - 1);
+if ($endPage - $startPage + 1 < $range) {
+    $startPage = max(1, $endPage - $range + 1);
+}
+
+// Query untuk data history
 $query = "SELECT h.id_history, h.kode_booking, u.username AS user, r.room_type AS room, 
                  p.code AS promo, b.booking_date, b.check_in_date, b.check_out_date, b.total_amount, b.status
           FROM tb_history h
           LEFT JOIN tb_bookings b ON h.kode_booking = b.kode_booking
           LEFT JOIN tb_users u ON b.id_user = u.id_user
           LEFT JOIN tb_rooms r ON b.id_room = r.id_room
-          LEFT JOIN tb_promo p ON b.id = p.id"; // Ganti b.id menjadi b.id_promo
+          LEFT JOIN tb_promo p ON b.id = p.id
+          LIMIT $offset, $perPage";
 $result = mysqli_query($conn, $query);
 ?>
+
+
 
 <?php include "header.php"; ?>
 <?php include "sidebar.php"; ?>
@@ -48,7 +74,7 @@ $result = mysqli_query($conn, $query);
             </thead>
             <tbody>
                 <?php
-                $no = 1;
+                $no = $offset + 1;
                 while ($row = mysqli_fetch_assoc($result)) :
                     // Cek apakah promo kosong atau NULL
                     $promo = $row['promo'] ? $row['promo'] : "Tidak Menggunakan";
@@ -80,12 +106,30 @@ $result = mysqli_query($conn, $query);
             </tbody>
         </table>
 
+        <!-- Footer Pagination -->
         <div class="card-footer-burung">
-            <div>Menampilkan 1 sampai <?php echo mysqli_num_rows($result); ?> dari <?php echo mysqli_num_rows($result); ?> entri</div>
+            <div>
+                Menampilkan <?= $offset + 1; ?> sampai <?= min($offset + $perPage, $totalRows); ?> dari <?= $totalRows; ?> entri
+            </div>
             <div class="pagination-kucing">
-                <button class="btn-page-singa">Sebelumnya</button>
-                <button class="btn-page-singa active">1</button>
-                <button class="btn-page-singa">Selanjutnya</button>
+                <!-- Tombol Sebelumnya -->
+                <?php if ($page > 1): ?>
+                    <a href="?page=<?= $page - 1 ?>" class="btn-page-singa">Sebelumnya</a>
+                <?php else: ?>
+                    <button class="btn-page-singa disabled">Sebelumnya</button>
+                <?php endif; ?>
+
+                <!-- Nomor halaman -->
+                <?php for ($i = $startPage; $i <= $endPage; $i++): ?>
+                    <a href="?page=<?= $i ?>" class="btn-page-singa <?= ($i == $page) ? 'active' : '' ?>"><?= $i ?></a>
+                <?php endfor; ?>
+
+                <!-- Tombol Selanjutnya -->
+                <?php if ($page < $totalPages): ?>
+                    <a href="?page=<?= $page + 1 ?>" class="btn-page-singa">Selanjutnya</a>
+                <?php else: ?>
+                    <button class="btn-page-singa disabled">Selanjutnya</button>
+                <?php endif; ?>
             </div>
         </div>
 
