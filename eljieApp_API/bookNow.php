@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Ambil ID user berdasarkan email (username)
-    $sql_user = "SELECT id_user FROM tb_users WHERE email = ?";
+    $sql_user = "SELECT id_user FROM tb_users WHERE username = ?";
     $stmt_user = $conn->prepare($sql_user);
     $stmt_user->bind_param("s", $username);
     $stmt_user->execute();
@@ -71,9 +71,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt_promo->close();
     }
 
-    // Simpan ke tb_bookings
-    // Format total_amount dengan 3 angka desimal untuk tipe decimal
-    $total_amount = number_format((float)$total_amount, 3, '.', '');  // Pastikan format dengan 3 desimal
+    // // Simpan ke tb_bookings
+    // // Format total_amount dengan 3 angka desimal untuk tipe decimal
+    // $total_amount = number_format((float)$total_amount, 0, '.', '');  // Pastikan format dengan 3 desimal
+
+    // // Membersihkan dan memformat total_amount (menghapus karakter selain angka dan titik)
+    // $total_amount = preg_replace("/[^0-9.]/", "", $total_amount);
 
     $sql = "INSERT INTO tb_bookings (id_user, id_room, id, kode_booking, booking_date, check_in_date, check_out_date, total_amount, status)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";

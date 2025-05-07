@@ -1,29 +1,52 @@
 <?php
+header('Content-Type: application/json');
+
 $servername = "localhost";
 $username = "root";
 $password = "";
 $dbname = "db_eljie";
 
-// Create connection
+// Buat koneksi
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Check connection
+// Cek koneksi
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    die(json_encode([
+        "success" => false,
+        "message" => "Koneksi ke database gagal"
+    ]));
 }
 
-$email = $_POST['username'];  // Menggunakan email sebagai username
-$password = $_POST['password'];  // Password yang dimasukkan oleh pengguna
+$email = $_POST['username'] ?? '';
+$password = $_POST['password'] ?? '';
 
-// Query untuk mengecek apakah email dan password valid
-$sql = "SELECT * FROM tb_users WHERE email = '$email' AND password = '$password'";
+// Validasi input sederhana
+if (empty($email) || empty($password)) {
+    echo json_encode([
+        "success" => false,
+        "message" => "Email dan password wajib diisi"
+    ]);
+    exit;
+}
 
-$result = $conn->query($sql);
+// Gunakan prepared statement untuk keamanan
+$stmt = $conn->prepare("SELECT username FROM tb_users WHERE email = ? AND password = ?");
+$stmt->bind_param("ss", $email, $password);
+$stmt->execute();
+$result = $stmt->get_result();
 
-if ($result->num_rows > 0) {
-    echo "Login Berhasil!";
+if ($user = $result->fetch_assoc()) {
+    echo json_encode([
+        "success" => true,
+        "message" => "Login Berhasil!",
+        "username" => $user['username']
+    ]);
 } else {
-    echo "Login Gagal: Periksa email/password.";
+    echo json_encode([
+        "success" => false,
+        "message" => "Login Gagal: Periksa email/password."
+    ]);
 }
 
 $conn->close();
+?>

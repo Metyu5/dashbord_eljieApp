@@ -69,7 +69,7 @@ $result = mysqli_query($conn, $query);
                     <th>Check In</th>
                     <th>Check Out</th>
                     <th>Total Harga</th>
-                    <th>Status</th> <!-- Kolom status ditambahkan -->
+                    <th>Status</th> 
                 </tr>
             </thead>
             <tbody>

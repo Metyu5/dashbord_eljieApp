@@ -1,6 +1,15 @@
 <?php
 include "config/koneksi.php";
 
+// // Fungsi untuk dump dan die
+// function dd($var)
+// {
+//     echo '<pre>';
+//     var_dump($var);
+//     echo '</pre>';
+//     die(); // Menghentikan eksekusi skrip
+// }
+
 // Ambil data dari form
 $id_user = $_POST['id_user'];
 $id_room = $_POST['id_room'];
@@ -10,6 +19,9 @@ $check_in_date = $_POST['check_in_date'];
 $check_out_date = $_POST['check_out_date'];
 $total_amount = $_POST['total_amount'];
 $status = 'terpesan'; // status default
+
+// Tampilkan data yang diterima untuk debugging
+// dd($_POST); // Menampilkan semua data yang diterima dari form
 
 // Validasi sederhana
 if (!$id_user || !$id_room || !$booking_date || !$check_in_date || !$check_out_date || !$total_amount) {
