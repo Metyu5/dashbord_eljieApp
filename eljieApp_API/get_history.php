@@ -35,13 +35,13 @@ if (!$user) {
 
 $id_user = $user['id_user'];
 
-// Ambil history pemesanan dan detail kamar
+// Ambil history pemesanan dan detail kamar (tanpa pembulatan total_amount)
 $query = "
     SELECT h.id_history, h.kode_booking, h.created_at,
-       b.id_bookings AS id_booking,
-       b.booking_date, b.check_in_date, b.check_out_date, 
-       FORMAT(b.total_amount, 0, 'de_DE') as total_amount, b.status,
-       r.room_type, r.price, r.foto
+           b.id_bookings AS id_booking,
+           b.booking_date, b.check_in_date, b.check_out_date, 
+           b.total_amount, b.status,
+           r.room_type, r.price, r.foto
     FROM tb_history h
     JOIN tb_bookings b ON h.id_booking = b.id_bookings
     JOIN tb_rooms r ON b.id_room = r.id_room
@@ -57,8 +57,8 @@ $data = [];
 
 if ($result) {
     while ($row = $result->fetch_assoc()) {
-        // Formatkan total_amount agar tidak ada titik desimal jika menggunakan format angka ribuan
-        $row['total_amount'] = number_format($row['total_amount'], 0, ',', '.');
+        // Pastikan total_amount dikirim sebagai float (tanpa pembulatan)
+        $row['total_amount'] = (float) $row['total_amount'];
         $data[] = $row;
     }
 
