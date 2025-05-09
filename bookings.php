@@ -85,7 +85,8 @@ $result = mysqli_query($conn, $query);
                             }
 
                             echo "<tr>";
-                            echo "<td>" . $counter++ . "</td>"; // Gunakan $counter untuk nomor urut
+                            echo "<td>" . sprintf("%02d", $counter++) . "</td>";
+
                             echo "<td>" . $row['user'] . "</td>";
                             echo "<td>" . $row['room'] . "</td>";
                             echo "<td>" . $promo . "</td>";

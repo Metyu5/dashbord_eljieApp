@@ -65,7 +65,7 @@ if ($endPage - $startPage + 1 < $range) {
                 <tbody>
                     <?php while ($row = mysqli_fetch_assoc($query)): ?>
                         <tr>
-                            <td><?= $counter++; ?></td>
+                            <td><?= sprintf("%02d", $counter++); ?></td> <!-- Format nomor urut dengan 2 digit -->
                             <td><?= htmlspecialchars($row['code']); ?></td>
                             <td><?= htmlspecialchars($row['type']); ?></td>
                             <td>

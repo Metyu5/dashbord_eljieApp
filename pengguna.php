@@ -62,7 +62,7 @@ if ($endPage - $startPage + 1 < $range) {
                 <tbody>
                     <?php while ($row = mysqli_fetch_assoc($query)): ?>
                         <tr>
-                            <td><?= $counter++; ?></td>
+                            <td><?= sprintf("%02d", $counter++); ?></td>
                             <td><?= htmlspecialchars($row['username']); ?></td>
                             <td><?= htmlspecialchars($row['email']); ?></td>
                             <td><?= htmlspecialchars($row['no_hp']); ?></td>

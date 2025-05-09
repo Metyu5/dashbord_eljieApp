@@ -37,8 +37,6 @@ $query = "SELECT h.id_history, h.kode_booking, u.username AS user, r.room_type A
 $result = mysqli_query($conn, $query);
 ?>
 
-
-
 <?php include "header.php"; ?>
 <?php include "sidebar.php"; ?>
 
@@ -69,7 +67,7 @@ $result = mysqli_query($conn, $query);
                     <th>Check In</th>
                     <th>Check Out</th>
                     <th>Total Harga</th>
-                    <th>Status</th> 
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -91,7 +89,7 @@ $result = mysqli_query($conn, $query);
                     }
                 ?>
                     <tr>
-                        <td><?php echo $no++; ?></td>
+                        <td><?php echo sprintf("%02d", $no++); ?></td> <!-- Format nomor urut dengan 2 digit -->
                         <td><?php echo $row['kode_booking']; ?></td>
                         <td><?php echo $row['user']; ?></td>
                         <td><?php echo $row['room']; ?></td>
