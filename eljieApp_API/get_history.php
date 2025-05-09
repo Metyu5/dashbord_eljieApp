@@ -29,7 +29,7 @@ $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 
 if (!$user) {
-    echo json_encode(['success' => false, 'message' => 'User tidak ditemukan']);
+    echo json_encode(['success' => false, 'message' => 'User  tidak ditemukan']);
     exit;
 }
 
@@ -45,7 +45,7 @@ $query = "
     FROM tb_history h
     JOIN tb_bookings b ON h.id_booking = b.id_bookings
     JOIN tb_rooms r ON b.id_room = r.id_room
-    WHERE b.id_user = ?
+    WHERE b.id_user = ? AND b.status != 'dibatalkan'  -- Tambahkan kondisi ini
     ORDER BY h.created_at DESC
 ";
 
