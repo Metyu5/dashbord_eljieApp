@@ -29,8 +29,8 @@ if (empty($email) || empty($password)) {
     exit;
 }
 
-// Gunakan prepared statement untuk keamanan
-$stmt = $conn->prepare("SELECT username, email FROM tb_users WHERE email = ? AND password = ?");
+// Gunakan prepared statement
+$stmt = $conn->prepare("SELECT id_user, username, email, no_hp FROM tb_users WHERE email = ? AND password = ?");
 $stmt->bind_param("ss", $email, $password);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -39,8 +39,10 @@ if ($user = $result->fetch_assoc()) {
     echo json_encode([
         "success" => true,
         "message" => "Login Berhasil!",
+        "id_user" => $user['id_user'],         // Tambahkan id_user
         "username" => $user['username'],
-        "email" => $user['email'] // Menambahkan email ke respons
+        "email" => $user['email'],
+        "no_hp" => $user['no_hp']
     ]);
 } else {
     echo json_encode([
