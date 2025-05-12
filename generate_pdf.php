@@ -4,6 +4,7 @@ require_once 'config/koneksi.php';
 // Set timezone ke WITA (Asia/Makassar)
 date_default_timezone_set('Asia/Makassar');
 
+// Query untuk mengambil data riwayat pemesanan beserta total jumlah
 $query = "SELECT h.id_history, 
                  h.kode_booking, 
                  u.username AS user, 
@@ -18,9 +19,16 @@ $query = "SELECT h.id_history,
           LEFT JOIN tb_bookings b ON h.id_booking = b.id_bookings
           LEFT JOIN tb_users u ON b.id_user = u.id_user
           LEFT JOIN tb_rooms r ON b.id_room = r.id_room
-          LEFT JOIN tb_promo p ON b.id = p.id"; // Perbaikan pada bagian join untuk promo
+          LEFT JOIN tb_promo p ON b.id = p.id";
 
 $result = mysqli_query($conn, $query);
+
+// Query untuk menghitung total semua pemesanan
+$totalQuery = "SELECT SUM(b.total_amount) AS total_sum
+               FROM tb_bookings b";
+$totalResult = mysqli_query($conn, $totalQuery);
+$totalRow = mysqli_fetch_assoc($totalResult);
+$totalAmount = $totalRow['total_sum'];
 
 // Convert logo path and encode
 $logoPath = str_replace('\\', '/', 'C:/laragon/www/eljie_app/assets/images/logohotel.png');
@@ -237,6 +245,11 @@ if (mysqli_num_rows($result) > 0) {
 $html .= '
         </tbody>
     </table>
+
+    <!-- Total Amount -->
+    <div class="meta-info">
+        <div><strong>Total Semua Pemesanan:</strong> Rp ' . number_format($totalAmount, 3, ',', '.') . '</div>
+    </div>
 </body>
 </html>';
 
