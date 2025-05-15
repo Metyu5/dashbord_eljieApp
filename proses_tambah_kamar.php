@@ -32,3 +32,4 @@ if (move_uploaded_file($foto_tmp, $foto_path)) {
 }
 
 $conn->close();
+?>
